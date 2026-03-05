@@ -6,7 +6,7 @@
 /analysis/archive/
 /data/raw/
 /data/primary/note.txt
-/prepare-sample/
+/data/prepare-sample/
 
 # History files
 .Rhistory
