@@ -1,6 +1,11 @@
 ---
 title: "Analysis"
 format: html
+execute:
+  warning: false
+  message: false
+  echo: true
+
 ---
 
 # Load packages
@@ -150,13 +155,13 @@ prereg_statement_by_year <- d_eligible %>%
 # Functional overall
 prereg_functional_overall <- d_eligible %>%
   mutate(prereg_access_status = factor(prereg_access_status, levels = c("NO", "YES")), # show zero percentages too
-         prereg_access_status = fct_na_value_to_level(prereg_access_status, level = "NO")) %>% # covert NAs to "NO"
+         prereg_access_status = fct_na_value_to_level(prereg_access_status, level = "NO")) %>% # convert NAs to "NO"
   count_prop_ci(prereg_access_status, ci_method = "wilson")
 
 # Functional by year
 prereg_functional_by_year <- d_eligible %>%
   mutate(prereg_access_status = factor(prereg_access_status, levels = c("NO", "YES")), # show zero percentages too
-         prereg_access_status = fct_na_value_to_level(prereg_access_status, level = "NO")) %>% # covert NAs to "NO"
+         prereg_access_status = fct_na_value_to_level(prereg_access_status, level = "NO")) %>% # convert NAs to "NO"
   count_prop_ci_by(prereg_access_status, group = year, ci_method = "wilson")
 
 # For Chi-Squared test
@@ -197,7 +202,7 @@ Of the `r prereg_statement_overall %>% filter(prereg_statement == "YES — the s
 There was a modest increase in functional preregistration over time (Figure 1). Specifically, we identified functional preregistrations for `r prereg_functional_by_year %>% filter(year == "2012", prereg_access_status == "YES") %>% pull(report)` articles in 2012, `r prereg_functional_by_year %>% filter(year == "2018", prereg_access_status == "YES") %>% pull(report)` articles in 2018, and `r prereg_functional_by_year %>% filter(year == "2024", prereg_access_status == "YES") %>% pull(report)` articles in 2024. A post-hoc (not preregistered) chi-square test indicated a statistically significant increase in functional preregistration between 2012 and 2024, χ²(`r unname(prereg_chi$parameter)`, N = `r sum(prereg_chi$observed)`) = `r unname(round(prereg_chi$statistic,2))`, `r apa_p(prereg_chi$p.value, inline = T)`.
   
 ## Preregistration registries
-The most commonly used registry for functional preregistration was `r prereg_access_overall %>% filter(n == max(n)) %>% pull(prereg_access_method)` (n = `r prereg_access_overall %>% filter(n == max(n)) %>% pull(n)` articles) with other platforms each accounting for less than `r prereg_access_overall %>% arrange(desc(n)) %>% slice(2) %>% mutate(n = n+1) %>% pull(n)` articles (for details, see Supplementary Table Z). We did not find any `r #prereg_access_overall %>% filter(prereg_access_method == "Registered Report") %>% nrow()` Registered Reports.
+The most commonly used registry for functional preregistration was `r prereg_access_overall %>% filter(n == max(n)) %>% pull(prereg_access_method)` (n = `r prereg_access_overall %>% filter(n == max(n)) %>% pull(n)` articles) with other platforms each accounting for less than `r prereg_access_overall %>% arrange(desc(n)) %>% slice(2) %>% mutate(n = n+1) %>% pull(n)` articles (for details, see Supplementary Table Z). No articles were `r #prereg_access_overall %>% filter(prereg_access_method == "Registered Report") %>% nrow()` Registered Reports.
 
 # Measurement instruments
 
@@ -218,12 +223,12 @@ measures_reasons_overall <- d_eligible %>%
 # Functional
 measures_functional_overall <- d_eligible %>%
   mutate(measures_access_status = factor(measures_access_status, levels = c("NO", "YES")), # show zero percentages too
-         measures_access_status = fct_na_value_to_level(measures_access_status, level = "NO")) %>% # covert NAs to "NO"
+         measures_access_status = fct_na_value_to_level(measures_access_status, level = "NO")) %>% # convert NAs to "NO"
   count_prop_ci(measures_access_status, ci_method = "wilson")
 
 measures_functional_by_year <- d_eligible %>%
   mutate(measures_access_status = factor(measures_access_status, levels = c("NO", "YES")), # show zero percentages too
-         measures_access_status = fct_na_value_to_level(measures_access_status, level = "NO")) %>% # covert NAs to "NO"
+         measures_access_status = fct_na_value_to_level(measures_access_status, level = "NO")) %>% # convert NAs to "NO"
   count_prop_ci_by(measures_access_status, group = year, ci_method = "wilson")
 
 # For Chi-Squared test
@@ -255,19 +260,19 @@ measures_access_method_overall <- d_eligible %>%
 The vast majority of articles did not share any veridical measurement instruments; however, the prevalence of measurement instrument sharing has increased modestly over time. 
 
 ## Availability statements for measurement instruments
-`r measures_statement_overall %>% filter(measures_statement == "NO — there is no measures availability statement") %>% pull(report)` articles did not contain any statements about the availability of measurement instruments; `r measures_statement_overall %>% filter(measures_statement == "UNCLEAR — the statement says that the measures are available on request") %>% pull(report)` articles stated that measurement instruments were only available on request; and `r measures_statement_overall %>% filter(measures_statement == "YES — the statement says that the measures are not available") %>% pull(report)` article explicitly said that measurement instruments were not available. Of the remaining articles, `r measures_statement_overall %>% filter(measures_statement == "YES — the statement says that all or some measures are available") %>% pull(report)` stated that at least one measurement instrument was available and for an additional `r measures_statement_overall %>% filter(measures_statement == "YES — no explicit statement but measures found") %>% pull(report)` we incidentally found a measurement instrument even though the article had no statements about measurement instrument availability.
+`r measures_statement_overall %>% filter(measures_statement == "NO — there is no measures availability statement") %>% pull(report)` articles did not contain any statements about the availability of primary measurement instruments; `r measures_statement_overall %>% filter(measures_statement == "UNCLEAR — the statement says that the measures are available on request") %>% pull(report)` articles stated that measurement instruments were only available on request; and `r measures_statement_overall %>% filter(measures_statement == "YES — the statement says that the measures are not available") %>% pull(report)` article explicitly said that measurement instruments were not available. Of the remaining articles, `r measures_statement_overall %>% filter(measures_statement == "YES — the statement says that all or some measures are available") %>% pull(report)` stated that at least one measurement instrument was available and for an additional `r measures_statement_overall %>% filter(measures_statement == "YES — no explicit statement but measures found") %>% pull(report)` we incidentally found a measurement instrument even though the article had no statements about measurement instrument availability.
 
 ## Functional availability of measurement instruments
-Of the `r measures_statement_overall %>% filter(measures_statement == "YES — the statement says that all or some measures are available") %>% pull(n)` articles which stated that at least one measurement instrument was available, we could not access the instrument in `r d_eligible %>% count(measures_statement, measures_access_status) %>% filter(measures_statement == "YES — the statement says that all or some measures are available", measures_access_status == "NO") %>% pull(n)` cases, because we could not find any measurement instrument at the provided link (n = `r measures_non_functional_reasons %>% filter(measures_access_detail == "Cannot find measures") %>% pull(n)`), a fee was required (n = `r measures_non_functional_reasons %>% filter(measures_access_detail == "Fee required") %>% pull(n)`), or a link was broken (n = `r measures_non_functional_reasons %>% filter(measures_access_detail == "Broken link") %>% pull(n)`). Thus, the overall prevalence of articles functionally sharing at least one veridical measurement instrument (including the `r measures_statement_overall %>% filter(measures_statement == "YES — no explicit statement but measures found") %>% pull(n)` articles where we incidentally found a measurement instrument) was `r measures_functional_overall %>% filter(measures_access_status == "YES") %>% pull(report)` articles. 
+Of the `r measures_statement_overall %>% filter(measures_statement == "YES — the statement says that all or some measures are available") %>% pull(n)` articles which stated that at least one primary measurement instrument was available, we could not access the instrument in `r d_eligible %>% count(measures_statement, measures_access_status) %>% filter(measures_statement == "YES — the statement says that all or some measures are available", measures_access_status == "NO") %>% pull(n)` cases, because we could not find any measurement instrument at the provided link (n = `r measures_non_functional_reasons %>% filter(measures_access_detail == "Cannot find measures") %>% pull(n)`), a fee was required (n = `r measures_non_functional_reasons %>% filter(measures_access_detail == "Fee required") %>% pull(n)`), or a link was broken (n = `r measures_non_functional_reasons %>% filter(measures_access_detail == "Broken link") %>% pull(n)`). Thus, the overall prevalence of articles functionally sharing at least one veridical measurement instrument (including the `r measures_statement_overall %>% filter(measures_statement == "YES — no explicit statement but measures found") %>% pull(n)` articles where we incidentally found a measurement instrument) was `r measures_functional_overall %>% filter(measures_access_status == "YES") %>% pull(report)` articles. 
 
 ## Availability of measurement instruments over time
-There has been a modest increase in functional sharing of measurement instruments over time (Figure 1). Specifically, we found functional sharing of at least one veridical measurement instrument for `r measures_functional_by_year %>% filter(year == "2012", measures_access_status == "YES") %>% pull(report)` articles in 2012, `r measures_functional_by_year %>% filter(year == "2018", measures_access_status == "YES") %>% pull(report)` articles in 2018, and `r measures_functional_by_year %>% filter(year == "2024", measures_access_status == "YES") %>% pull(report)` articles in 2024. A post-hoc (not preregistered) chi-square test indicated a statistically significant increase in the functional sharing of measurement instruments between 2012 and 2024, χ²(`r unname(measures_chi$parameter)`, N = `r sum(measures_chi$observed)`) = `r unname(round(measures_chi$statistic,2))`, `r apa_p(measures_chi$p.value, inline = T)`.
+There has been a modest increase in functional sharing of primary measurement instruments over time (Figure 1). Specifically, we found functional sharing of at least one primary measurement instrument for `r measures_functional_by_year %>% filter(year == "2012", measures_access_status == "YES") %>% pull(report)` articles in 2012, `r measures_functional_by_year %>% filter(year == "2018", measures_access_status == "YES") %>% pull(report)` articles in 2018, and `r measures_functional_by_year %>% filter(year == "2024", measures_access_status == "YES") %>% pull(report)` articles in 2024. A post-hoc (not preregistered) chi-square test indicated a statistically significant increase in the functional sharing of measurement instruments between 2012 and 2024, χ²(`r unname(measures_chi$parameter)`, N = `r sum(measures_chi$observed)`) = `r unname(round(measures_chi$statistic,2))`, `r apa_p(measures_chi$p.value, inline = T)`.
 
 ## Justifications for restricting access to measurement instruments
 Of the `r d_eligible %>% filter(measures_statement %in% c("YES — the statement says that the measures are not available", "UNCLEAR — the statement says that the measures are available on request")) %>% nrow()` articles that restricted access (i.e., said measurement instruments were only available on request or explicitly stated that measurement instruments were not available) `r measures_reasons_overall %>% filter(measures_statement %in% c("YES — the statement says that the measures are not available", "UNCLEAR — the statement says that the measures are available on request"), measures_access_restrictions == "YES") %>% pull(n) %>% sum()` provided a reason for limiting access.
 
 ## Methods of sharing measurement instruments
-The most common functional sharing method was `r measures_access_method_overall %>% filter(n == max(n)) %>% pull(measures_access_method)` (n = `r measures_access_method_overall %>% filter(n == max(n)) %>% pull(n)` articles) followed by `r measures_access_method_overall %>% arrange(desc(n)) %>% slice(2) %>% pull(measures_access_method)` (n = `r measures_access_method_overall %>% arrange(desc(n)) %>% slice(2) %>% pull(n)` articles). Other sharing platforms accounted for less than `r measures_access_method_overall %>% arrange(desc(n)) %>% slice(3) %>% mutate(n = n+1) %>% pull(n)` articles (for details, see Supplementary Table Z). 
+The most common functional sharing method was `r measures_access_method_overall %>% filter(n == max(n)) %>% pull(measures_access_method)` (n = `r measures_access_method_overall %>% filter(n == max(n)) %>% pull(n)` articles) followed by `r measures_access_method_overall %>% arrange(desc(n)) %>% slice(2) %>% pull(measures_access_method)` (n = `r measures_access_method_overall %>% arrange(desc(n)) %>% slice(2) %>% pull(n)` articles). Other sharing methods each accounted for less than `r measures_access_method_overall %>% arrange(desc(n)) %>% slice(3) %>% mutate(n = n+1) %>% pull(n)` articles (for details, see Supplementary Table Z). 
 
 # Data
 
@@ -293,12 +298,12 @@ data_reasons_type <- d_eligible %>%
 # Functional
 data_functional_overall <- d_eligible %>%
   mutate(data_access_status = factor(data_access_status, levels = c("NO", "YES")), # show zero percentages too
-         data_access_status = fct_na_value_to_level(data_access_status, level = "NO")) %>% # covert NAs to "NO"
+         data_access_status = fct_na_value_to_level(data_access_status, level = "NO")) %>% # convert NAs to "NO"
   count_prop_ci(data_access_status, ci_method = "wilson")
 
 data_functional_by_year <- d_eligible %>%
   mutate(data_access_status = factor(data_access_status, levels = c("NO", "YES")), # show zero percentages too
-         data_access_status = fct_na_value_to_level(data_access_status, level = "NO")) %>% # covert NAs to "NO"
+         data_access_status = fct_na_value_to_level(data_access_status, level = "NO")) %>% # convert NAs to "NO"
   count_prop_ci_by(data_access_status, group = year, ci_method = "wilson")
 
 # For Chi-Squared test
@@ -339,10 +344,10 @@ Of the `r data_statement_overall %>% filter(data_statement == "YES — the state
 There has been a modest increase in functional sharing of raw/primary data over time (Figure 1). Specifically, we found functional data sharing for `r data_functional_by_year %>% filter(year == "2012", data_access_status == "YES") %>% pull(report)` articles in 2012, `r data_functional_by_year %>% filter(year == "2018", data_access_status == "YES") %>% pull(report)` articles in 2018, and `r data_functional_by_year %>% filter(year == "2024", data_access_status == "YES") %>% pull(report)` articles in 2024. A post-hoc (not preregistered) chi-square test indicated a statistically significant increase in the functional data sharing between 2012 and 2024, χ²(`r unname(data_chi$parameter)`, N = `r sum(data_chi$observed)`) = `r round(unname(data_chi$statistic),2)`, `r apa_p(data_chi$p.value, inline = T)`.
 
 ## Justifications for restricting access to data
-Of the `r d_eligible %>% filter(data_statement %in% c("UNCLEAR — the statement says that the data are available on request", "YES — the statement says that the data are not available")) %>% nrow()` articles that restricted data access (i.e., said data was only available on request or explicitly stated that data were not available), `r d_eligible %>% filter(data_statement %in% c("UNCLEAR — the statement says that the data are available on request", "YES — the statement says that the data are not available")) %>% filter(data_access_restrictions == "NO") %>% nrow()` did not provide a justification. Of the `r d_eligible %>% filter(data_statement %in% c("UNCLEAR — the statement says that the data are available on request", "YES — the statement says that the data are not available")) %>% filter(data_access_restrictions == "YES") %>% nrow()` articles that did provide a justification for restricting access, the justifications were participant privacy/confidentiality (n = `r data_reasons_type %>% filter(data_access_restrictions_type == "Privacy/confidentiality") %>% pull(n)`), participants did not provide consent for data sharing (n = `r data_reasons_type %>% filter(data_access_restrictions_type == "No consent") %>% pull(n)`), the research topic was sensitive (n = `r data_reasons_type %>% filter(data_access_restrictions_type == "Sensitivity") %>% pull(n)`), an ethics board did not permit data sharing (n = `r data_reasons_type %>% filter(data_access_restrictions_type == "Ethics board") %>% pull(n)`), a study sponsor did not permit data sharing (n = `r data_reasons_type %>% filter(data_access_restrictions_type == "Study sponsor") %>% pull(n)`), a data use agreement did not permit data sharing (n = `r data_reasons_type %>% filter(data_access_restrictions_type == "data use agreement") %>% pull(n)`), and the authors did not have permission to share (from an unspecified authority; n = `r data_reasons_type %>% filter(data_access_restrictions_type == "No permission (unclear from who)") %>% pull(n)`). Note that these numbers do not add up to `r d_eligible %>% filter(data_statement %in% c("UNCLEAR — the statement says that the data are available on request", "YES — the statement says that the data are not available")) %>% filter(data_access_restrictions == "YES") %>% nrow()` because some articles stated multiple reasons for not sharing data. 
+Of the `r d_eligible %>% filter(data_statement %in% c("UNCLEAR — the statement says that the data are available on request", "YES — the statement says that the data are not available")) %>% nrow()` articles that restricted data access (i.e., said data were only available on request or explicitly stated that data were not available), `r d_eligible %>% filter(data_statement %in% c("UNCLEAR — the statement says that the data are available on request", "YES — the statement says that the data are not available")) %>% filter(data_access_restrictions == "NO") %>% nrow()` did not provide a justification. Of the `r d_eligible %>% filter(data_statement %in% c("UNCLEAR — the statement says that the data are available on request", "YES — the statement says that the data are not available")) %>% filter(data_access_restrictions == "YES") %>% nrow()` articles that did provide a justification for restricting access, the justifications were participant privacy/confidentiality (n = `r data_reasons_type %>% filter(data_access_restrictions_type == "Privacy/confidentiality") %>% pull(n)`), participants did not provide consent for data sharing (n = `r data_reasons_type %>% filter(data_access_restrictions_type == "No consent") %>% pull(n)`), the research topic was sensitive (n = `r data_reasons_type %>% filter(data_access_restrictions_type == "Sensitivity") %>% pull(n)`), an ethics board did not permit data sharing (n = `r data_reasons_type %>% filter(data_access_restrictions_type == "Ethics board") %>% pull(n)`), a study sponsor did not permit data sharing (n = `r data_reasons_type %>% filter(data_access_restrictions_type == "Study sponsor") %>% pull(n)`), a data use agreement did not permit data sharing (n = `r data_reasons_type %>% filter(data_access_restrictions_type == "data use agreement") %>% pull(n)`), and the authors did not have permission to share (from an unspecified authority; n = `r data_reasons_type %>% filter(data_access_restrictions_type == "No permission (unclear from who)") %>% pull(n)`). Note that these numbers do not add up to `r d_eligible %>% filter(data_statement %in% c("UNCLEAR — the statement says that the data are available on request", "YES — the statement says that the data are not available")) %>% filter(data_access_restrictions == "YES") %>% nrow()` because some articles stated multiple reasons for not sharing data. 
 
 ## Methods of sharing data
-The most common functional sharing method was `r data_access_method_overall %>% filter(n == max(n)) %>% pull(data_access_method)` (n = `r data_access_method_overall %>% filter(n == max(n)) %>% pull(n)` articles). Other sharing platforms accounted for less than `r data_access_method_overall %>% arrange(desc(n)) %>% slice(2) %>% mutate(n = n+1) %>% pull(n)` articles (for details, see Supplementary Table Z). 
+The most common functional sharing method was `r data_access_method_overall %>% filter(n == max(n)) %>% pull(data_access_method)` (n = `r data_access_method_overall %>% filter(n == max(n)) %>% pull(n)` articles). Other sharing methods each accounted for less than `r data_access_method_overall %>% arrange(desc(n)) %>% slice(2) %>% mutate(n = n+1) %>% pull(n)` articles (for details, see Supplementary Table Z). 
 
 # Analysis scripts
 
@@ -361,12 +366,12 @@ analysis_reasons_overall <- d_eligible %>%
 # Functional 
 analysis_functional_overall <- d_eligible %>%
   mutate(analysis_access_status = factor(analysis_access_status, levels = c("NO", "YES")), # show zero percentages too
-         analysis_access_status = fct_na_value_to_level(analysis_access_status, level = "NO")) %>% # covert NAs to "NO"
+         analysis_access_status = fct_na_value_to_level(analysis_access_status, level = "NO")) %>% # convert NAs to "NO"
   count_prop_ci(analysis_access_status, ci_method = "wilson")
 
 analysis_functional_by_year <- d_eligible %>%
   mutate(analysis_access_status = factor(analysis_access_status, levels = c("NO", "YES")), # show zero percentages too
-         analysis_access_status = fct_na_value_to_level(analysis_access_status, level = "NO")) %>% # covert NAs to "NO"
+         analysis_access_status = fct_na_value_to_level(analysis_access_status, level = "NO")) %>% # convert NAs to "NO"
   count_prop_ci_by(analysis_access_status, group = year, ci_method = "wilson")
 
 # For Chi-Squared test
@@ -409,7 +414,7 @@ There has been a modest increase in functional sharing of analysis scripts over 
 Of the `r d_eligible %>% filter(analysis_statement %in% c("UNCLEAR — the statement says that the analysis scripts are available on request", "YES — the statement says that the analysis scripts are not available")) %>% nrow()` articles that restricted access to analysis scripts (i.e., said analysis scripts were only available on request or explicitly stated that analysis scripts were not available), `r d_eligible %>% filter(analysis_statement %in% c("UNCLEAR — the statement says that the analysis scripts are available on request", "YES — the statement says that the analysis scripts are not available")) %>% filter(analysis_access_restrictions == "YES") %>% nrow()` provided a justification. 
 
 ## Methods of sharing analysis scripts
-The most common functional sharing method was `r analysis_access_method_overall %>% filter(n == max(n)) %>% pull(analysis_access_method)` (n = `r analysis_access_method_overall %>% filter(n == max(n)) %>% pull(n)` articles). Other sharing platforms accounted for less than `r analysis_access_method_overall %>% arrange(desc(n)) %>% slice(2) %>% mutate(n = n+1) %>% pull(n)` articles (for details, see Supplementary Table Z). 
+The most common functional sharing method was `r analysis_access_method_overall %>% filter(n == max(n)) %>% pull(analysis_access_method)` (n = `r analysis_access_method_overall %>% filter(n == max(n)) %>% pull(n)` articles). Other sharing methods each accounted for less than `r analysis_access_method_overall %>% arrange(desc(n)) %>% slice(2) %>% mutate(n = n+1) %>% pull(n)` articles (for details, see Supplementary Table Z). 
 
 # Data and analysis scripts
 ```{r}
@@ -418,16 +423,16 @@ data_and_analysis_functional_overall <- d_eligible %>%
   mutate( 
     analysis_access_status = factor(analysis_access_status, levels = c("NO", "YES")), # show zero percentages too
     data_access_status = factor(data_access_status, levels = c("NO", "YES")), # show zero percentages too
-    analysis_access_status = fct_na_value_to_level(analysis_access_status, level = "NO"), # covert NAs to "NO"
-    data_access_status = fct_na_value_to_level(data_access_status, level = "NO")) %>% # covert NAs to "NO"
+    analysis_access_status = fct_na_value_to_level(analysis_access_status, level = "NO"), # convert NAs to "NO"
+    data_access_status = fct_na_value_to_level(data_access_status, level = "NO")) %>% # convert NAs to "NO"
   count_prop_ci(data_access_status, analysis_access_status, ci_method = "wilson")
 
 data_and_analysis_functional_by_year <- d_eligible %>%
   mutate( 
     analysis_access_status = factor(analysis_access_status, levels = c("NO", "YES")), # show zero percentages too
     data_access_status = factor(data_access_status, levels = c("NO", "YES")), # show zero percentages too
-    analysis_access_status = fct_na_value_to_level(analysis_access_status, level = "NO"), # covert NAs to "NO"
-    data_access_status = fct_na_value_to_level(data_access_status, level = "NO")) %>% # covert NAs to "NO"
+    analysis_access_status = fct_na_value_to_level(analysis_access_status, level = "NO"), # convert NAs to "NO"
+    data_access_status = fct_na_value_to_level(data_access_status, level = "NO")) %>% # convert NAs to "NO"
   count_prop_ci_by(data_access_status, analysis_access_status, group = year, ci_method = "wilson")
 
 # For Chi-Squared test
@@ -484,7 +489,7 @@ The vast majority of articles did not use reporting guidelines; however, the use
 There has been a modest increase in the use of reporting guidelines over time (Figure 1). Specifically, we found use of reporting guidelines in `r reporting_statement_by_year %>% filter(year == "2012", reporting_statement == "YES — the statement discloses use of at least one reporting guideline") %>% pull(report)` article in 2012, `r reporting_statement_by_year %>% filter(year == "2018", reporting_statement == "YES — the statement discloses use of at least one reporting guideline") %>% pull(report)` articles in 2018, and `r reporting_statement_by_year %>% filter(year == "2024", reporting_statement == "YES — the statement discloses use of at least one reporting guideline") %>% pull(report)` articles in 2024. A post-hoc (not preregistered) chi-square test indicated a statistically significant increase in the use of reporting guidelines between 2012 and 2024, χ²(`r unname(reporting_chi$parameter)`, N = `r sum(reporting_chi$observed)`) = `r round(unname(reporting_chi$statistic),2)`, `r apa_p(reporting_chi$p.value, inline = T)`.
 
 ## Types of reporting guidelines
-The most commonly used reporting guideline was `r reporting_type_overall %>% filter(n == max(n)) %>% pull(reporting_type)` (n = `r reporting_type_overall %>% filter(n == max(n)) %>% pull(n)` articles). Other reporting guidelines accounted for less than `r reporting_type_overall %>% arrange(desc(n)) %>% slice(2) %>% mutate(n = n+1) %>% pull(n)` articles (for details, see Supplementary Table Z). 
+The most commonly used reporting guideline was `r reporting_type_overall %>% filter(n == max(n)) %>% pull(reporting_type)` (n = `r reporting_type_overall %>% filter(n == max(n)) %>% pull(n)` articles). Other reporting guidelines each accounted for less than `r reporting_type_overall %>% arrange(desc(n)) %>% slice(2) %>% mutate(n = n+1) %>% pull(n)` articles (for details, see Supplementary Table Z). 
 
 # Funding disclosures
 
@@ -716,10 +721,10 @@ d_ira %>%
   summarise(across(c(Preregistration, Measures, Data, `Analysis scripts`, `Reporting guidelines`, Funding, `Conflicts of interest`), ~ mean(.x, na.rm = TRUE))) %>%
   mutate(across(everything(), ~ signif(. * 100, digits = 2))) %>%
   pivot_longer(cols = everything(), names_to = "Practice", values_to = "Inter-rater agreement (%)") %>%
-  kable(format = knitr::opts_knit$get("rmarkdown.pandoc.to"))
+  kable(format = "html")
 ```
 
-7. Measures — if there is disagreement about measures availability, then I check. In my coding, there has to be an explicit statement of availability of the original materials, it's not sufficient to just mention the source of the measure. A brief or incomplete description of a measurement instrument did not suffice. It was also not sufficient to share details about a secondary measurement (e.g., sample demographics) — it had to be a measure involved in a primary analysis (if primary analysis was not identified by the authors, I made an educated guess based on the results reported in the abstract). So at least one complete primary measurement had to be shared. Future studies should be clearer about how they are operationalising this variable.
+Inter-rater agreement for disclosure statements was high (> 91%) for all variables except for measurement instrument availability (Supplementary Table D1). An examination of the coding differences for measurement instruments showed that for `r d_ira_measures %>% slice(1) %>% pull(n)` articles BK coded that measurement instruments were available and JB coded that they were not. For `r d_ira_measures %>% slice(2) %>% pull(n)` articles, BK used the “unclear” option and JB coded that measurement instruments were not available. Other types of coding differences accounted for fewer than `r d_ira_measures %>% slice(3) %>% pull(n) + 1` articles each. Team discussions highlighted that there were ambiguities in extraction form A (used by BK). TEH resolved these ambiguities and created extraction B (used by JB). Additionally, when coding was compared, TEH reviewed all cases where BK and JB were not in agreement that “NO — there is no measures availability statement”. In the revised coding, there had to be an explicit statement of availability of at least one primary measurement instrument. It was not sufficient for authors to only mention the source of measurement (e.g., by citing a third party). A brief or incomplete description of a measurement instrument also did not suffice — authors had to provide the veridical measurement instrument, or at least a complete version of the instrument (e.g., all questions from a survey instrument). In some cases, authors shared the questions used for some secondary measures, but did not share the primary measurement instrument. This also did not. If the authors did not clearly identify the primary measures themselves, T.E.H. inferred this by considering measures reported in the abstract to be primary measures). 
 
 ## Subgroup analyses based on research type and data type 
 
@@ -727,7 +732,7 @@ d_ira %>%
 # Functional preregistration by research type (primary/secondary)
 prereg_functional_by_research_type <- d_eligible %>%
   mutate(prereg_access_status = factor(prereg_access_status, levels = c("NO", "YES")), # show zero percentages too
-         prereg_access_status = fct_na_value_to_level(prereg_access_status, level = "NO")) %>% # covert NAs to "NO"
+         prereg_access_status = fct_na_value_to_level(prereg_access_status, level = "NO")) %>% # convert NAs to "NO"
 
   count(research_design, prereg_access_status, .drop = F) %>%
   group_by(research_design) %>%
@@ -741,7 +746,7 @@ prereg_functional_by_research_type <- d_eligible %>%
 # Functional preregistration by data type (quantitative, qualitative)
 prereg_functional_by_data_type <- d_eligible %>%
   mutate(prereg_access_status = factor(prereg_access_status, levels = c("NO", "YES")), # show zero percentages too
-         prereg_access_status = fct_na_value_to_level(prereg_access_status, level = "NO")) %>% # covert NAs to "NO"
+         prereg_access_status = fct_na_value_to_level(prereg_access_status, level = "NO")) %>% # convert NAs to "NO"
   count(type_of_data, prereg_access_status, .drop = F) %>%
   group_by(type_of_data) %>%
   mutate(N = sum(n), percent = signif((n/N)*100,2), report = paste0(n,'/',N,' (',percent,'%)')) %>%
@@ -758,7 +763,7 @@ prereg_subgroup <- bind_cols(prereg_functional_by_research_type, prereg_function
 # Functional measurement sharing by research type (primary/secondary)
 measures_functional_by_research_type <- d_eligible %>%
   mutate(measures_access_status = factor(measures_access_status, levels = c("NO", "YES")), # show zero percentages too
-         measures_access_status = fct_na_value_to_level(measures_access_status, level = "NO")) %>% # covert NAs to "NO"
+         measures_access_status = fct_na_value_to_level(measures_access_status, level = "NO")) %>% # convert NAs to "NO"
 
   count(research_design, measures_access_status, .drop = F) %>%
   group_by(research_design) %>%
@@ -772,7 +777,7 @@ measures_functional_by_research_type <- d_eligible %>%
 # Functional measures by data type (quantitative, qualitative)
 measures_functional_by_data_type <- d_eligible %>%
   mutate(measures_access_status = factor(measures_access_status, levels = c("NO", "YES")), # show zero percentages too
-         measures_access_status = fct_na_value_to_level(measures_access_status, level = "NO")) %>% # covert NAs to "NO"
+         measures_access_status = fct_na_value_to_level(measures_access_status, level = "NO")) %>% # convert NAs to "NO"
   count(type_of_data, measures_access_status, .drop = F) %>%
   group_by(type_of_data) %>%
   mutate(N = sum(n), percent = signif((n/N)*100,2), report = paste0(n,'/',N,' (',percent,'%)')) %>%
@@ -789,7 +794,7 @@ measures_subgroup <- bind_cols(measures_functional_by_research_type, measures_fu
 # Functional data sharing by research type (primary/secondary)
 data_functional_by_research_type <- d_eligible %>%
   mutate(data_access_status = factor(data_access_status, levels = c("NO", "YES")), # show zero percentages too
-         data_access_status = fct_na_value_to_level(data_access_status, level = "NO")) %>% # covert NAs to "NO"
+         data_access_status = fct_na_value_to_level(data_access_status, level = "NO")) %>% # convert NAs to "NO"
 
   count(research_design, data_access_status, .drop = F) %>%
   group_by(research_design) %>%
@@ -803,7 +808,7 @@ data_functional_by_research_type <- d_eligible %>%
 # Functional data by data type (quantitative, qualitative)
 data_functional_by_data_type <- d_eligible %>%
   mutate(data_access_status = factor(data_access_status, levels = c("NO", "YES")), # show zero percentages too
-         data_access_status = fct_na_value_to_level(data_access_status, level = "NO")) %>% # covert NAs to "NO"
+         data_access_status = fct_na_value_to_level(data_access_status, level = "NO")) %>% # convert NAs to "NO"
   count(type_of_data, data_access_status, .drop = F) %>%
   group_by(type_of_data) %>%
   mutate(N = sum(n), percent = signif((n/N)*100,2), report = paste0(n,'/',N,' (',percent,'%)')) %>%
@@ -820,7 +825,7 @@ data_subgroup <- bind_cols(data_functional_by_research_type, data_functional_by_
 # Functional analysis script sharing by research type (primary/secondary)
 analysis_functional_by_research_type <- d_eligible %>%
   mutate(analysis_access_status = factor(analysis_access_status, levels = c("NO", "YES")), # show zero percentages too
-         analysis_access_status = fct_na_value_to_level(analysis_access_status, level = "NO")) %>% # covert NAs to "NO"
+         analysis_access_status = fct_na_value_to_level(analysis_access_status, level = "NO")) %>% # convert NAs to "NO"
 
   count(research_design, analysis_access_status, .drop = F) %>%
   group_by(research_design) %>%
@@ -834,7 +839,7 @@ analysis_functional_by_research_type <- d_eligible %>%
 # Functional analysis by data type (quantitative, qualitative)
 analysis_functional_by_data_type <- d_eligible %>%
   mutate(analysis_access_status = factor(analysis_access_status, levels = c("NO", "YES")), # show zero percentages too
-         analysis_access_status = fct_na_value_to_level(analysis_access_status, level = "NO")) %>% # covert NAs to "NO"
+         analysis_access_status = fct_na_value_to_level(analysis_access_status, level = "NO")) %>% # convert NAs to "NO"
   count(type_of_data, analysis_access_status, .drop = F) %>%
   group_by(type_of_data) %>%
   mutate(N = sum(n), percent = signif((n/N)*100,2), report = paste0(n,'/',N,' (',percent,'%)')) %>%
@@ -879,7 +884,7 @@ reporting_subgroup <- bind_cols(reporting_functional_by_research_type, reporting
 # Table 
 bind_rows(prereg_subgroup, measures_subgroup, data_subgroup, analysis_subgroup, reporting_subgroup) %>%
   relocate(Practice, Primary, Secondary, `Both research types`, Quantitative, Qualitative, `Both data types`) %>%  # put columns in order
-  kable(format = knitr::opts_knit$get("rmarkdown.pandoc.to")) |>
+  kable(format = "html") %>%
   add_header_above(
     c(
       " " = 1,
@@ -887,8 +892,54 @@ bind_rows(prereg_subgroup, measures_subgroup, data_subgroup, analysis_subgroup, 
       "Data type"     = 3
     ),
     bold = TRUE
-  ) |>
+  ) %>%
   kable_styling(full_width = FALSE)
+```
+## Access methods for preregistrations, measurement instruments, data, and analysis scripts. Types of reporting guidelines.
+
+Supplementary Table X. Preregistration registries.
+
+```{r}
+prereg_access_overall %>% 
+  select("Registry" = prereg_access_method, n) %>% 
+  arrange(desc(n)) %>%
+  kable(format = "html")
+```
+
+Supplementary Table X. Measurement instrument sharing methods.
+
+```{r}
+measures_access_method_overall  %>% 
+  select("Method" = measures_access_method, n) %>% 
+  arrange(desc(n)) %>%
+  kable(format = "html")
+```
+
+Supplementary Table X. Data sharing methods.
+
+```{r}
+data_access_method_overall  %>% 
+  select("Method" = data_access_method, n) %>% 
+  arrange(desc(n)) %>%
+  kable(format = "html")
+```
+
+Supplementary Table X. Analysis script sharing methods.
+
+```{r}
+analysis_access_method_overall  %>% 
+  select("Method" = analysis_access_method, n) %>% 
+  arrange(desc(n)) %>%
+  kable(format = "html")
+```
+
+Supplementary Table X. Types of reporting guidelines used.
+
+```{r}
+reporting_type_overall %>%
+  select("Guideline" = reporting_type, n) %>% 
+  arrange(desc(n)) %>%
+  kable(format = "html")
 ```
 
 # Session Info
