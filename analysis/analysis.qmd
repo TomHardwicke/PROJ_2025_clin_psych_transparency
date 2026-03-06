@@ -1,11 +1,10 @@
 ---
-title: "Analysis"
+title: "Has transparency improved in clinical psychology? A repeated cross-sectional study (2012, 2018, 2024)"
 format: html
 execute:
   warning: false
   message: false
   echo: true
-
 ---
 
 # Load packages
