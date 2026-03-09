@@ -163,10 +163,24 @@ prereg_functional_by_year <- d_eligible %>%
          prereg_access_status = fct_na_value_to_level(prereg_access_status, level = "NO")) %>% # convert NAs to "NO"
   count_prop_ci_by(prereg_access_status, group = year, ci_method = "wilson")
 
-# For Chi-Squared test
-prereg_chi <- prereg_functional_by_year %>% 
+# For Chi-Squared test 1
+prereg_chi_1 <- prereg_functional_by_year %>% 
   filter(
-    year %in% c("2012", "2024"), 
+    year %in% c("2012", "2018"), 
+    prereg_access_status == "YES") %>% 
+  select(year, case = n, N) %>% 
+  mutate(noncase = N-case) %>% select(-N) %>% 
+  pivot_longer(
+    cols = c(case, noncase),
+    names_to = "status",
+    values_to = "count") %>%
+    xtabs(count ~ year + status, data = .) %>% 
+  chisq.test(correct = FALSE)
+
+# For Chi-Squared test 2
+prereg_chi_2 <- prereg_functional_by_year %>% 
+  filter(
+    year %in% c("2018", "2024"), 
     prereg_access_status == "YES") %>% 
   select(year, case = n, N) %>% 
   mutate(noncase = N-case) %>% select(-N) %>% 
@@ -188,8 +202,6 @@ prereg_access_overall <- d_eligible %>%
   count(prereg_access_method, .drop = FALSE)
 ```
 
-The vast majority of articles did not have a preregistration; however, the prevalence of preregistration has increased modestly over time. 
-
 ## Preregistration statements
 
 `r prereg_statement_overall %>% filter(prereg_statement == "NO — there is no statement about preregistration") %>% pull(report)` articles did not contain a statement about preregistration, `r prereg_statement_overall %>% filter(prereg_statement == "YES — the statement says that there is no preregistration") %>% pull(report)` articles stated that there was no preregistration, and the remaining `r prereg_statement_overall %>% filter(prereg_statement == "YES — the statement says that there is a preregistration") %>% pull(report)` articles stated that there was a preregistration.
@@ -198,7 +210,7 @@ The vast majority of articles did not have a preregistration; however, the preva
 Of the `r prereg_statement_overall %>% filter(prereg_statement == "YES — the statement says that there is a preregistration") %>% pull(n)` articles that stated there was a preregistration, we could not access the preregistration for `r d_eligible %>% count(prereg_statement, prereg_access_status) %>% filter(prereg_statement == "YES — the statement says that there is a preregistration", prereg_access_status == "NO") %>% pull(n)` articles, due to broken links (n = `r prereg_non_functional_reasons %>% filter(prereg_access_detail == "Broken link / ID") %>% pull(n)`) or unclear access instructions (n =  `r prereg_non_functional_reasons %>% filter(prereg_access_detail == "Unclear access instructions") %>% pull(n)`). Thus, the overall prevalence of functional preregistration was `r prereg_functional_overall %>% filter(prereg_access_status == "YES") %>% pull(report)` articles.
 
 ## Use of preregistration over time
-There was a modest increase in functional preregistration over time (Figure 1). Specifically, we identified functional preregistrations for `r prereg_functional_by_year %>% filter(year == "2012", prereg_access_status == "YES") %>% pull(report)` articles in 2012, `r prereg_functional_by_year %>% filter(year == "2018", prereg_access_status == "YES") %>% pull(report)` articles in 2018, and `r prereg_functional_by_year %>% filter(year == "2024", prereg_access_status == "YES") %>% pull(report)` articles in 2024. A post-hoc (not preregistered) chi-square test indicated a statistically significant increase in functional preregistration between 2012 and 2024, χ²(`r unname(prereg_chi$parameter)`, N = `r sum(prereg_chi$observed)`) = `r unname(round(prereg_chi$statistic,2))`, `r apa_p(prereg_chi$p.value, inline = T)`.
+The prevalence of functional preregistration increased over time (Figure 1). Specifically, we identified functional preregistrations for `r prereg_functional_by_year %>% filter(year == "2012", prereg_access_status == "YES") %>% pull(report)` articles in 2012, `r prereg_functional_by_year %>% filter(year == "2018", prereg_access_status == "YES") %>% pull(report)` articles in 2018, and `r prereg_functional_by_year %>% filter(year == "2024", prereg_access_status == "YES") %>% pull(report)` articles in 2024. Post-hoc (not preregistered) chi-square tests indicated that the increase in prevalence was not statistically significant between 2012 and 2018, χ²(`r unname(prereg_chi_1$parameter)`, N = `r sum(prereg_chi_1$observed)`) = `r unname(round(prereg_chi_1$statistic,2))`, `r apa_p(prereg_chi_1$p.value, inline = T)` and was statistically significant between 2018 and 2024, χ²(`r unname(prereg_chi_2$parameter)`, N = `r sum(prereg_chi_2$observed)`) = `r unname(round(prereg_chi_2$statistic,2))`, `r apa_p(prereg_chi_2$p.value, inline = T)`.
   
 ## Preregistration registries
 The most commonly used registry for functional preregistration was `r prereg_access_overall %>% filter(n == max(n)) %>% pull(prereg_access_method)` (n = `r prereg_access_overall %>% filter(n == max(n)) %>% pull(n)` articles) with other platforms each accounting for less than `r prereg_access_overall %>% arrange(desc(n)) %>% slice(2) %>% mutate(n = n+1) %>% pull(n)` articles (for details, see Supplementary Table Z). No articles were `r #prereg_access_overall %>% filter(prereg_access_method == "Registered Report") %>% nrow()` Registered Reports.
@@ -230,10 +242,24 @@ measures_functional_by_year <- d_eligible %>%
          measures_access_status = fct_na_value_to_level(measures_access_status, level = "NO")) %>% # convert NAs to "NO"
   count_prop_ci_by(measures_access_status, group = year, ci_method = "wilson")
 
-# For Chi-Squared test
-measures_chi <- measures_functional_by_year %>% 
+# For Chi-Squared test 1
+measures_chi_1 <- measures_functional_by_year %>% 
   filter(
-    year %in% c("2012", "2024"), 
+    year %in% c("2012", "2018"), 
+    measures_access_status == "YES") %>% 
+  select(year, case = n, N) %>% 
+  mutate(noncase = N-case) %>% select(-N) %>% 
+  pivot_longer(
+    cols = c(case, noncase),
+    names_to = "status",
+    values_to = "count") %>%
+    xtabs(count ~ year + status, data = .) %>% 
+  chisq.test(correct = FALSE)
+
+# For Chi-Squared test 2
+measures_chi_2 <- measures_functional_by_year %>% 
+  filter(
+    year %in% c("2018", "2024"), 
     measures_access_status == "YES") %>% 
   select(year, case = n, N) %>% 
   mutate(noncase = N-case) %>% select(-N) %>% 
@@ -256,16 +282,16 @@ measures_access_method_overall <- d_eligible %>%
 
 ```
 
-The vast majority of articles did not share any veridical measurement instruments; however, the prevalence of measurement instrument sharing has increased modestly over time. 
+The vast majority of articles did not share any measurement instruments; however, the prevalence of measurement instrument sharing has increased modestly over time. 
 
 ## Availability statements for measurement instruments
 `r measures_statement_overall %>% filter(measures_statement == "NO — there is no measures availability statement") %>% pull(report)` articles did not contain any statements about the availability of primary measurement instruments; `r measures_statement_overall %>% filter(measures_statement == "UNCLEAR — the statement says that the measures are available on request") %>% pull(report)` articles stated that measurement instruments were only available on request; and `r measures_statement_overall %>% filter(measures_statement == "YES — the statement says that the measures are not available") %>% pull(report)` article explicitly said that measurement instruments were not available. Of the remaining articles, `r measures_statement_overall %>% filter(measures_statement == "YES — the statement says that all or some measures are available") %>% pull(report)` stated that at least one measurement instrument was available and for an additional `r measures_statement_overall %>% filter(measures_statement == "YES — no explicit statement but measures found") %>% pull(report)` we incidentally found a measurement instrument even though the article had no statements about measurement instrument availability.
 
 ## Functional availability of measurement instruments
-Of the `r measures_statement_overall %>% filter(measures_statement == "YES — the statement says that all or some measures are available") %>% pull(n)` articles which stated that at least one primary measurement instrument was available, we could not access the instrument in `r d_eligible %>% count(measures_statement, measures_access_status) %>% filter(measures_statement == "YES — the statement says that all or some measures are available", measures_access_status == "NO") %>% pull(n)` cases, because we could not find any measurement instrument at the provided link (n = `r measures_non_functional_reasons %>% filter(measures_access_detail == "Cannot find measures") %>% pull(n)`), a fee was required (n = `r measures_non_functional_reasons %>% filter(measures_access_detail == "Fee required") %>% pull(n)`), or a link was broken (n = `r measures_non_functional_reasons %>% filter(measures_access_detail == "Broken link") %>% pull(n)`). Thus, the overall prevalence of articles functionally sharing at least one veridical measurement instrument (including the `r measures_statement_overall %>% filter(measures_statement == "YES — no explicit statement but measures found") %>% pull(n)` articles where we incidentally found a measurement instrument) was `r measures_functional_overall %>% filter(measures_access_status == "YES") %>% pull(report)` articles. 
+Of the `r measures_statement_overall %>% filter(measures_statement == "YES — the statement says that all or some measures are available") %>% pull(n)` articles which stated that at least one primary measurement instrument was available, we could not access the instrument in `r d_eligible %>% count(measures_statement, measures_access_status) %>% filter(measures_statement == "YES — the statement says that all or some measures are available", measures_access_status == "NO") %>% pull(n)` cases, because we could not find any measurement instrument at the provided link (n = `r measures_non_functional_reasons %>% filter(measures_access_detail == "Cannot find measures") %>% pull(n)`), a fee was required (n = `r measures_non_functional_reasons %>% filter(measures_access_detail == "Fee required") %>% pull(n)`), or a link was broken (n = `r measures_non_functional_reasons %>% filter(measures_access_detail == "Broken link") %>% pull(n)`). Thus, the overall prevalence of articles functionally sharing at least one measurement instrument (including the `r measures_statement_overall %>% filter(measures_statement == "YES — no explicit statement but measures found") %>% pull(n)` articles where we incidentally found a measurement instrument) was `r measures_functional_overall %>% filter(measures_access_status == "YES") %>% pull(report)` articles. 
 
 ## Availability of measurement instruments over time
-There has been a modest increase in functional sharing of primary measurement instruments over time (Figure 1). Specifically, we found functional sharing of at least one primary measurement instrument for `r measures_functional_by_year %>% filter(year == "2012", measures_access_status == "YES") %>% pull(report)` articles in 2012, `r measures_functional_by_year %>% filter(year == "2018", measures_access_status == "YES") %>% pull(report)` articles in 2018, and `r measures_functional_by_year %>% filter(year == "2024", measures_access_status == "YES") %>% pull(report)` articles in 2024. A post-hoc (not preregistered) chi-square test indicated a statistically significant increase in the functional sharing of measurement instruments between 2012 and 2024, χ²(`r unname(measures_chi$parameter)`, N = `r sum(measures_chi$observed)`) = `r unname(round(measures_chi$statistic,2))`, `r apa_p(measures_chi$p.value, inline = T)`.
+Functional sharing of primary measurement instruments has increased over time (Figure 1). Specifically, we found functional sharing of at least one primary measurement instrument for `r measures_functional_by_year %>% filter(year == "2012", measures_access_status == "YES") %>% pull(report)` articles in 2012, `r measures_functional_by_year %>% filter(year == "2018", measures_access_status == "YES") %>% pull(report)` articles in 2018, and `r measures_functional_by_year %>% filter(year == "2024", measures_access_status == "YES") %>% pull(report)` articles in 2024. Post-hoc (not preregistered) chi-square tests indicated a statistically significant increase in the functional sharing of measurement instruments between 2012 and 2018, χ²(`r unname(measures_chi_1$parameter)`, N = `r sum(measures_chi_1$observed)`) = `r unname(round(measures_chi_1$statistic,2))`, `r apa_p(measures_chi_1$p.value, inline = T)`, and no significant increase between 2012 and 2018, χ²(`r unname(measures_chi_2$parameter)`, N = `r sum(measures_chi_2$observed)`) = `r unname(round(measures_chi_2$statistic,2))`, `r apa_p(measures_chi_2$p.value, inline = T)`.
 
 ## Justifications for restricting access to measurement instruments
 Of the `r d_eligible %>% filter(measures_statement %in% c("YES — the statement says that the measures are not available", "UNCLEAR — the statement says that the measures are available on request")) %>% nrow()` articles that restricted access (i.e., said measurement instruments were only available on request or explicitly stated that measurement instruments were not available) `r measures_reasons_overall %>% filter(measures_statement %in% c("YES — the statement says that the measures are not available", "UNCLEAR — the statement says that the measures are available on request"), measures_access_restrictions == "YES") %>% pull(n) %>% sum()` provided a reason for limiting access.
@@ -305,10 +331,24 @@ data_functional_by_year <- d_eligible %>%
          data_access_status = fct_na_value_to_level(data_access_status, level = "NO")) %>% # convert NAs to "NO"
   count_prop_ci_by(data_access_status, group = year, ci_method = "wilson")
 
-# For Chi-Squared test
-data_chi <- data_functional_by_year %>% 
+# For Chi-Squared test 1
+data_chi_1 <- data_functional_by_year %>% 
   filter(
-    year %in% c("2012", "2024"), 
+    year %in% c("2012", "2018"), 
+    data_access_status == "YES") %>% 
+  select(year, case = n, N) %>% 
+  mutate(noncase = N-case) %>% select(-N) %>% 
+  pivot_longer(
+    cols = c(case, noncase),
+    names_to = "status",
+    values_to = "count") %>%
+    xtabs(count ~ year + status, data = .) %>% 
+  chisq.test(correct = FALSE)
+
+# For Chi-Squared test 2
+data_chi_2 <- data_functional_by_year %>% 
+  filter(
+    year %in% c("2018", "2024"), 
     data_access_status == "YES") %>% 
   select(year, case = n, N) %>% 
   mutate(noncase = N-case) %>% select(-N) %>% 
@@ -340,7 +380,7 @@ The vast majority of articles did not share any raw or primary level data; howev
 Of the `r data_statement_overall %>% filter(data_statement == "YES — the statement says that the data are available") %>% pull(n)` articles that said data were available, we could not access the data in `r d_eligible %>% count(data_statement, data_access_status) %>% filter(data_statement == "YES — the statement says that the data are available", data_access_status == "NO") %>% pull(n)` cases, because we could not find any data at the provided link (n = `r data_non_functional_reasons %>% filter(data_access_detail == "Cannot find data") %>% pull(n)`), unclear access instructions (n = `r data_non_functional_reasons %>% filter(data_access_detail == "Unclear access instructions") %>% pull(n)`), a link was broken (n = `r data_non_functional_reasons %>% filter(data_access_detail == "Broken link") %>% pull(n)`), or access was restricted (n = `r data_non_functional_reasons %>% filter(data_access_detail == "Access restricted") %>% pull(n)`). Thus, the overall prevalence of articles functionally sharing raw/primary data was `r data_functional_overall %>% filter(data_access_status == "YES") %>% pull(report)` articles. 
 
 ## Availability of data over time
-There has been a modest increase in functional sharing of raw/primary data over time (Figure 1). Specifically, we found functional data sharing for `r data_functional_by_year %>% filter(year == "2012", data_access_status == "YES") %>% pull(report)` articles in 2012, `r data_functional_by_year %>% filter(year == "2018", data_access_status == "YES") %>% pull(report)` articles in 2018, and `r data_functional_by_year %>% filter(year == "2024", data_access_status == "YES") %>% pull(report)` articles in 2024. A post-hoc (not preregistered) chi-square test indicated a statistically significant increase in the functional data sharing between 2012 and 2024, χ²(`r unname(data_chi$parameter)`, N = `r sum(data_chi$observed)`) = `r round(unname(data_chi$statistic),2)`, `r apa_p(data_chi$p.value, inline = T)`.
+There has been a modest increase in functional sharing of raw/primary data over time (Figure 1). Specifically, we found functional data sharing for `r data_functional_by_year %>% filter(year == "2012", data_access_status == "YES") %>% pull(report)` articles in 2012, `r data_functional_by_year %>% filter(year == "2018", data_access_status == "YES") %>% pull(report)` articles in 2018, and `r data_functional_by_year %>% filter(year == "2024", data_access_status == "YES") %>% pull(report)` articles in 2024. Post-hoc (not preregistered) chi-square tests indicated a no statistically significant increase in functional data sharing between 2012 and 2018, χ²(`r unname(data_chi_1$parameter)`, N = `r sum(data_chi_1$observed)`) = `r round(unname(data_chi_1$statistic),2)`, `r apa_p(data_chi_1$p.value, inline = T)` and a significant increase between 2018 and 2024, χ²(`r unname(data_chi_2$parameter)`, N = `r sum(data_chi_2$observed)`) = `r round(unname(data_chi_2$statistic),2)`, `r apa_p(data_chi_2$p.value, inline = T)`.
 
 ## Justifications for restricting access to data
 Of the `r d_eligible %>% filter(data_statement %in% c("UNCLEAR — the statement says that the data are available on request", "YES — the statement says that the data are not available")) %>% nrow()` articles that restricted data access (i.e., said data were only available on request or explicitly stated that data were not available), `r d_eligible %>% filter(data_statement %in% c("UNCLEAR — the statement says that the data are available on request", "YES — the statement says that the data are not available")) %>% filter(data_access_restrictions == "NO") %>% nrow()` did not provide a justification. Of the `r d_eligible %>% filter(data_statement %in% c("UNCLEAR — the statement says that the data are available on request", "YES — the statement says that the data are not available")) %>% filter(data_access_restrictions == "YES") %>% nrow()` articles that did provide a justification for restricting access, the justifications were participant privacy/confidentiality (n = `r data_reasons_type %>% filter(data_access_restrictions_type == "Privacy/confidentiality") %>% pull(n)`), participants were not asked to consent to data sharing (n = `r data_reasons_type %>% filter(data_access_restrictions_type == "No consent") %>% pull(n)`), the data contained sensitive information (n = `r data_reasons_type %>% filter(data_access_restrictions_type == "Sensitivity") %>% pull(n)`), an ethics board did not permit data sharing (n = `r data_reasons_type %>% filter(data_access_restrictions_type == "Ethics board") %>% pull(n)`), a study sponsor did not permit data sharing (n = `r data_reasons_type %>% filter(data_access_restrictions_type == "Study sponsor") %>% pull(n)`), a data use agreement did not permit data sharing (n = `r data_reasons_type %>% filter(data_access_restrictions_type == "data use agreement") %>% pull(n)`), and the authors did not have permission to share (from an unspecified authority; n = `r data_reasons_type %>% filter(data_access_restrictions_type == "No permission (unclear from who)") %>% pull(n)`). Note that these numbers do not add up to `r d_eligible %>% filter(data_statement %in% c("UNCLEAR — the statement says that the data are available on request", "YES — the statement says that the data are not available")) %>% filter(data_access_restrictions == "YES") %>% nrow()` because some articles stated multiple reasons for not sharing data. 
@@ -546,8 +586,8 @@ coi_statement_by_year <- d_eligible %>%
     coi_statement == "NO — there is no conflict of interest statement" ~ "No")) %>%
   count_prop_ci_by(coi_statement, group = year, ci_method = "wilson")
 
-# For Chi-Squared test
-coi_chi <- coi_statement_by_year %>% 
+# Chi-Squared test 2012 vs 2024
+coi_chi_1 <- coi_statement_by_year %>% 
   filter(
     year %in% c("2012", "2024"), 
     coi_statement == "Yes") %>% 
@@ -568,7 +608,7 @@ coi_detail_overall <- d_eligible %>%
 `r coi_statement_overall %>% filter(coi_statement == "Yes") %>% pull(report)` articles contained a conflict of interest statement and the remaining `r coi_statement_overall %>% filter(coi_statement == "No") %>% pull(report)` articles did not. Of the `r coi_statement_overall %>% filter(coi_statement == "Yes") %>% pull(n)` articles that contained a conflict of interest statement, `r coi_detail_overall %>% filter(coi_statement == "YES — the statement discloses at least one conflict of interest") %>% pull(n)` disclosed at least one conflict of interest and `r coi_detail_overall %>% filter(coi_statement == "YES — the statement says that there were no conflicts of interest") %>% pull(n)` explicitly stated that there were no conflicts of interest.
 
 ## Conflict of interest statements over time
-There has been a substantial increase in the use of conflict of interest statements over time (Figure 1). Specifically, we found conflict of interest statements in `r coi_statement_by_year %>% filter(year == "2012", coi_statement == "Yes") %>% pull(report)` articles in 2012, `r coi_statement_by_year %>% filter(year == "2018", coi_statement == "Yes") %>% pull(report)` articles in 2018, and `r coi_statement_by_year %>% filter(year == "2024", coi_statement == "Yes") %>% pull(report)` articles in 2024. A post-hoc (not preregistered) chi-square test indicated a statistically significant increase in the use of conflict of interest statements between 2012 and 2024, χ²(`r unname(coi_chi$parameter)`, N = `r sum(coi_chi$observed)`) = `r round(unname(coi_chi$statistic),2)`, `r apa_p(coi_chi$p.value, inline = T)`.
+There has been a substantial increase in the use of conflict of interest statements over time (Figure 1). Specifically, we found conflict of interest statements in `r coi_statement_by_year %>% filter(year == "2012", coi_statement == "Yes") %>% pull(report)` articles in 2012, `r coi_statement_by_year %>% filter(year == "2018", coi_statement == "Yes") %>% pull(report)` articles in 2018, and `r coi_statement_by_year %>% filter(year == "2024", coi_statement == "Yes") %>% pull(report)` articles in 2024. A post-hoc (not preregistered) chi-square test indicated a statistically significant increase in the use of conflict of interest statements between 2012 and 2024, χ²(`r unname(coi_chi_1$parameter)`, N = `r sum(coi_chi_1$observed)`) = `r round(unname(coi_chi_1$statistic),2)`, `r apa_p(coi_chi_1$p.value, inline = T)`.
 
 # Plots
 
@@ -723,7 +763,7 @@ d_ira %>%
   kable(format = "html")
 ```
 
-Inter-rater agreement for disclosure statements was high (> 91%) for all variables except for measurement instrument availability (Supplementary Table D1). An examination of the coding differences for measurement instruments showed that for `r d_ira_measures %>% slice(1) %>% pull(n)` articles BK coded that measurement instruments were available and JB coded that they were not. For `r d_ira_measures %>% slice(2) %>% pull(n)` articles, BK used the “unclear” option and JB coded that measurement instruments were not available. Other types of coding differences accounted for fewer than `r d_ira_measures %>% slice(3) %>% pull(n) + 1` articles each. Team discussions highlighted that there were ambiguities in extraction form A (used by BK). TEH resolved these ambiguities and created extraction B (used by JB). Additionally, when coding was compared, TEH reviewed all cases where BK and JB were not in agreement that “NO — there is no measures availability statement”. In the revised coding, there had to be an explicit statement of availability of at least one primary measurement instrument. It was not sufficient for authors to only mention the source of measurement (e.g., by citing a third party). A brief or incomplete description of a measurement instrument also did not suffice — authors had to provide the veridical measurement instrument, or at least a complete version of the instrument (e.g., all questions from a survey instrument). In some cases, authors shared the questions used for some secondary measures, but did not share the primary measurement instrument. This also did not. If the authors did not clearly identify the primary measures themselves, T.E.H. inferred this by considering measures reported in the abstract to be primary measures). 
+Inter-rater agreement for disclosure statements was high (> 91%) for all variables except for measurement instrument availability (Supplementary Table D1). An examination of the coding differences for measurement instruments showed that for `r d_ira_measures %>% slice(1) %>% pull(n)` articles BK coded that measurement instruments were available and JB coded that they were not. For `r d_ira_measures %>% slice(2) %>% pull(n)` articles, BK used the “unclear” option and JB coded that measurement instruments were not available. Other types of coding differences accounted for fewer than `r d_ira_measures %>% slice(3) %>% pull(n) + 1` articles each. Team discussions highlighted that there were ambiguities in extraction form A (used by BK). TEH resolved these ambiguities and created extraction B (used by JB). Additionally, when coding was compared, TEH reviewed all cases where BK and JB were not in agreement that “NO — there is no measures availability statement”. In the revised coding, there had to be an explicit statement of availability of at least one primary measurement instrument. It was not sufficient for authors to only mention the source of measurement (e.g., by citing a third party). A brief or incomplete description of a measurement instrument also did not suffice — authors had to provide the  measurement instrument, or at least a complete version of the instrument (e.g., all questions from a survey instrument). In some cases, authors shared the questions used for some secondary measures, but did not share the primary measurement instrument. This also did not. If the authors did not clearly identify the primary measures themselves, T.E.H. inferred this by considering measures reported in the abstract to be primary measures). 
 
 ## Subgroup analyses based on research type and data type 
 
