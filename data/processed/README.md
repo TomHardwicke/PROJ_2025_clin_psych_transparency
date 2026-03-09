@@ -4,4 +4,4 @@ coding_differences_resolved.xlsx was manually created by duplicating coding_diff
 
 TEH also added a column "data_access_restrictions_type" which he used to classify data access restrictions into particular types.
  
-After these manual changes, coding_differences_resolved.xlsx was locked on 2026-02-10 and no further changes were made.
+After these manual changes, coding_differences_resolved.xlsx was locked on 2026-03-09 and no further changes were made.
