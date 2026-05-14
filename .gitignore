@@ -60,3 +60,5 @@ po/*~
 # RStudio Connect folder
 rsconnect/
 analysis/analysis.html
+analysis/figs/bsky.png
+analysis/figs/bksy2.png
