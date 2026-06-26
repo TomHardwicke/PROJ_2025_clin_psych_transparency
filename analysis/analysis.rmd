@@ -823,6 +823,21 @@ reporting_type_overall %>%
   kable(format = "html")
 ```
 
+Supplementary Table X. Included journals.
+
+```{r}
+journal_list <- d_eligible %>% count(journal_name)
+```
+
+The `r nrow(d_eligible)` eligible articles were published in `r nrow(journal_list)` different journals.
+
+```{r}
+journal_list %>% 
+  arrange(desc(n)) %>%
+  kable(format = "html")
+```
+
+
 # Session Info
 
 Information about the software environment used to run the analyses reported in this script.
